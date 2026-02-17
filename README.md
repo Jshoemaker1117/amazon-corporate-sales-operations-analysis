@@ -47,3 +47,33 @@ SQLite
 DB Browser for SQLite
 
 SQL (JOINs, Aggregations, Margin Calculations)
+-- Net Margin by Category
+SELECT 
+    p.category,
+    ROUND(SUM(o.revenue), 2) AS revenue,
+    ROUND(SUM(o.net_profit), 2) AS net_profit,
+    ROUND(100.0 * SUM(o.net_profit) / NULLIF(SUM(o.revenue),0), 2) AS net_margin_pct
+FROM orders o
+JOIN products p
+    ON o.product_id = p.product_id
+GROUP BY p.category
+ORDER BY net_margin_pct DESC;
+-- Return Rate by Category
+SELECT 
+    p.category,
+    ROUND(AVG(o.returned) * 100, 2) AS return_rate_pct
+FROM orders o
+JOIN products p
+    ON o.product_id = p.product_id
+GROUP BY p.category
+ORDER BY return_rate_pct DESC;
+-- Shipping Cost as % of Revenue
+SELECT 
+    p.category,
+    ROUND(100.0 * AVG(o.shipping_cost) / NULLIF(AVG(o.revenue),0), 2) AS shipping_pct_of_revenue
+FROM orders o
+JOIN products p
+    ON o.product_id = p.product_id
+GROUP BY p.category
+ORDER BY shipping_pct_of_revenue DESC;
+
